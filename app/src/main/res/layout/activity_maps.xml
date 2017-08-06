@@ -1,0 +1,147 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.desafiocittati.desafiocittatiestagio.MapsActivity" />
+
+
+    <FrameLayout
+        android:id="@+id/frame_layout_main"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/colorPrimaryDark">
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/triangle1"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="-5dp"
+        android:layout_below="@id/frame_layout_main"
+        android:background="@drawable/triangle"
+        android:rotation="180"
+        android:layout_gravity="top"
+        android:layout_toLeftOf="@+id/triangle3"
+        android:layout_marginRight="90dp"
+        />
+
+    <FrameLayout
+        android:id="@+id/triangle2"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="-5dp"
+        android:layout_below="@id/frame_layout_main"
+        android:background="@drawable/triangle"
+        android:rotation="180"
+        android:layout_gravity="top"
+        android:layout_toLeftOf="@+id/triangle3"
+        android:layout_marginRight="25dp"
+        />
+
+    <FrameLayout
+        android:id="@+id/triangle3"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="-5dp"
+        android:layout_below="@id/frame_layout_main"
+        android:background="@drawable/triangle"
+        android:rotation="180"
+        android:layout_centerHorizontal="true"
+        />
+
+    <FrameLayout
+        android:id="@+id/triangle4"
+        android:layout_toRightOf="@+id/triangle3"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="-5dp"
+        android:layout_below="@id/frame_layout_main"
+        android:background="@drawable/triangle"
+        android:rotation="180"
+        android:layout_gravity="top"
+        android:layout_marginLeft="25dp"
+        />
+
+    <FrameLayout
+        android:id="@+id/triangle5"
+        android:layout_toRightOf="@+id/triangle3"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="-5dp"
+        android:layout_below="@id/frame_layout_main"
+        android:background="@drawable/triangle"
+        android:rotation="180"
+        android:layout_gravity="top"
+        android:layout_marginLeft="90dp"
+        />
+
+
+    <ImageView
+        android:id="@+id/iv_restaurant"
+        android:layout_width="40dp"
+        android:layout_height="85dp"
+        android:src="@drawable/restaurant"
+        android:layout_gravity="top"
+        android:layout_above="@id/triangle1"
+        android:layout_toLeftOf="@+id/triangle3"
+        android:layout_marginRight="95dp"
+        />
+
+    <ImageView
+        android:id="@+id/iv_bank"
+        android:layout_width="40dp"
+        android:layout_height="85dp"
+        android:src="@drawable/bank"
+        android:layout_gravity="top"
+        android:layout_above="@id/triangle2"
+        android:layout_toLeftOf="@+id/triangle3"
+        android:layout_marginRight="33dp"
+        />
+
+    <ImageView
+        android:id="@+id/iv_gas"
+        android:layout_width="40dp"
+        android:layout_height="85dp"
+        android:src="@drawable/gasstation"
+        android:layout_gravity="top"
+        android:layout_above="@id/triangle2"
+        android:layout_centerHorizontal="true"
+        />
+
+    <ImageView
+        android:id="@+id/iv_public"
+        android:layout_width="40dp"
+        android:layout_height="85dp"
+        android:src="@drawable/parking"
+        android:layout_gravity="top"
+        android:layout_above="@id/triangle2"
+        android:layout_marginLeft="21dp"
+        android:layout_toRightOf="@+id/triangle3"
+        />
+
+    <ImageView
+        android:id="@+id/iv_shop"
+        android:layout_width="40dp"
+        android:layout_height="85dp"
+        android:src="@drawable/shop"
+        android:layout_gravity="top"
+        android:layout_above="@id/triangle2"
+        android:layout_toRightOf="@+id/triangle3"
+        android:layout_marginLeft="82dp"
+
+        />
+
+
+
+
+
+</RelativeLayout>
