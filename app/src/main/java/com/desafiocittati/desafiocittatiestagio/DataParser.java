@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by thayo on 04/08/2017.
+ * Created by thayo on 05/08/2017.
  */
 
 public class DataParser {
@@ -57,32 +57,46 @@ public class DataParser {
 
 
         Map<Integer,List<LatLng>> location = new HashMap<Integer, List<LatLng>>();
-
-
+//        new LocationsDBController(context).clearAllLocations();
 
 
             for(int i= 0; i< jObject.size(); i++){
                 JSONObject temp  = (JSONObject) jObject.get(i);
                 if(convertDouble( temp.get("categoria")) == 1){
                     LatLng latLng = new LatLng((double) temp.get("latitude"), (double)temp.get("longitude"));
+                    if(!new LocationsDBController(context).isRestaurantExists(latLng)){
+                        new LocationsDBController(context).insertLocationsRestaurant(latLng);
+                    }
                     l1.add(latLng);
 
                 } else if((convertDouble( temp.get("categoria")))== 2){
                     LatLng latLng = new LatLng((double) temp.get("latitude"), (double)temp.get("longitude"));
+                    if(!new LocationsDBController(context).isBankExists(latLng)) {
+                        new LocationsDBController(context).insertLocationsBank(latLng);
+                    }
                     l2.add(latLng);
 
                 } else if(convertDouble( temp.get("categoria")) == 3){
                     LatLng latLng = new LatLng((double) temp.get("latitude"), (double)temp.get("longitude"));
+                    if(!new LocationsDBController(context).isGasStationExists(latLng)) {
+                        new LocationsDBController(context).insertLocationsGasStations(latLng);
+                    }
                     l3.add(latLng);
 
 
                 }else if(convertDouble( temp.get("categoria"))== 4){
                     LatLng latLng = new LatLng((double) temp.get("latitude"), (double)temp.get("longitude"));
+                    if(!new LocationsDBController(context).isPublicZoneExists(latLng)) {
+                        new LocationsDBController(context).insertLocationsPublicZone(latLng);
+                    }
                     l4.add(latLng);
 
 
                 }else if(convertDouble( temp.get("categoria"))== 5){
                     LatLng latLng = new LatLng((double) temp.get("latitude"), (double)temp.get("longitude"));
+                    if(!new LocationsDBController(context).isShopExists(latLng)) {
+                        new LocationsDBController(context).insertLocationsshop(latLng);
+                    }
                     l5.add(latLng);
 
                 }

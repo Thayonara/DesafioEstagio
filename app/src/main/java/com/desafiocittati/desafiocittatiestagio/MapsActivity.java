@@ -1,6 +1,8 @@
 package com.desafiocittati.desafiocittatiestagio;
 
 import android.app.ActionBar;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.FragmentActivity;
@@ -29,9 +31,11 @@ import java.util.Map;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private ImageView im1, im2, im3,im4, im5;
-    private FrameLayout f1, f2, f3, f4, f5;
+    private ImageView ivRestaurant, ivBank, ivGasStation,ivPublicZone, ivShop;
+    private FrameLayout frameRestaurant, frameBank, frameGasStation, framePublicZone, frameShop;
     private  Map<Integer,List<LatLng>> locations = new HashMap<Integer, List<LatLng>>();
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
 
     @Override
@@ -43,50 +47,55 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        im1 = (ImageView) findViewById(R.id.iv_restaurant);
-        im2 = (ImageView) findViewById(R.id.iv_bank);
-        im3 = (ImageView) findViewById(R.id.iv_gas);
-        im4 = (ImageView) findViewById(R.id.iv_public);
-        im5 = (ImageView) findViewById(R.id.iv_shop);
 
-        f1 = (FrameLayout) findViewById(R.id.triangle1);
-        f2 = (FrameLayout) findViewById(R.id.triangle2);
-        f3 = (FrameLayout) findViewById(R.id.triangle3);
-        f4 = (FrameLayout) findViewById(R.id.triangle4);
-        f5 = (FrameLayout) findViewById(R.id.triangle5);
+         sharedPreferences = getSharedPreferences(Constants.SHAREDPREFERENCES
+                , Context.MODE_PRIVATE);
+         editor = sharedPreferences.edit();
 
-        im1.setOnClickListener(new View.OnClickListener() {
+        ivRestaurant = (ImageView) findViewById(R.id.iv_restaurant);
+        ivBank = (ImageView) findViewById(R.id.iv_bank);
+        ivGasStation = (ImageView) findViewById(R.id.iv_gas);
+        ivPublicZone = (ImageView) findViewById(R.id.iv_public);
+        ivShop = (ImageView) findViewById(R.id.iv_shop);
+
+        frameRestaurant = (FrameLayout) findViewById(R.id.triangle1);
+        frameBank = (FrameLayout) findViewById(R.id.triangle2);
+        frameGasStation = (FrameLayout) findViewById(R.id.triangle3);
+        framePublicZone = (FrameLayout) findViewById(R.id.triangle4);
+        frameShop = (FrameLayout) findViewById(R.id.triangle5);
+
+        ivRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVisibilityMode("restaurant");
+                setVisibilityMode(Constants.RESTAURANT);
             }
         });
 
-        im2.setOnClickListener(new View.OnClickListener() {
+        ivBank.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVisibilityMode("bank");
+                setVisibilityMode(Constants.BANK);
             }
         });
 
-        im3.setOnClickListener(new View.OnClickListener() {
+        ivGasStation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVisibilityMode("gas_stations");
+                setVisibilityMode(Constants.GAS_STATION);
             }
         });
 
-        im4.setOnClickListener(new View.OnClickListener() {
+        ivPublicZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVisibilityMode("public_zone");
+                setVisibilityMode(Constants.PUBLIC_ZONE);
             }
         });
 
-        im5.setOnClickListener(new View.OnClickListener() {
+        ivShop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVisibilityMode("shop");
+                setVisibilityMode(Constants.SHOP);
             }
         });
 
@@ -94,20 +103,62 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     @Override
+    protected void onResume() {
+        locations = new HashMap<Integer, List<LatLng>>();
+
+
+        if(sharedPreferences.getBoolean(Constants.LOADED_JSON, false)) {
+            locations.put(1, new LocationsDBController(getApplication()).getAllLocationsRestaurant(getApplication()));
+            locations.put(2, new LocationsDBController(getApplication()).getAllLocationsBank(getApplication()));
+            locations.put(3, new LocationsDBController(getApplication()).getAllLocationsGasStation(getApplication()));
+            locations.put(4, new LocationsDBController(getApplication()).getAllLocationsPublicZone(getApplication()));
+            locations.put(5, new LocationsDBController(getApplication()).getAllLocationsShop(getApplication()));
+            if (!(sharedPreferences.getBoolean(Constants.SELECTED_RESTAURANT, true))) {
+                frameRestaurant.setVisibility(View.INVISIBLE);
+                deleteCategoryTemp(1);
+            }
+            if (!(sharedPreferences.getBoolean(Constants.SELECTED_BANK, true))) {
+                frameBank.setVisibility(View.INVISIBLE);
+
+                deleteCategoryTemp(2);
+            }
+            if (!(sharedPreferences.getBoolean(Constants.SELECTED_GAS_STATION, true))) {
+                frameGasStation.setVisibility(View.INVISIBLE);
+
+                deleteCategoryTemp(3);
+            }
+            if (!(sharedPreferences.getBoolean(Constants.SELECTED_PUBLIC_ZONE, true))) {
+                framePublicZone.setVisibility(View.INVISIBLE);
+
+                deleteCategoryTemp(4);
+            }
+            if (!(sharedPreferences.getBoolean(Constants.SELECTED_SHOP, true))) {
+                frameShop.setVisibility(View.INVISIBLE);
+
+                deleteCategoryTemp(5);
+            }
+        }
+        super.onResume();
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        locations = new DataParser().parse(getApplication());
+        if(!(sharedPreferences.getBoolean(Constants.LOADED_JSON, false))){
+            locations = new DataParser().parse(getApplication());
+            editor.putBoolean(Constants.LOADED_JSON, true);
+            editor.apply();
+        }
 
-        for(int i = 1; i <= locations.size(); i++){
-
-            for(int j = 0; j < locations.get(i).size(); j++){
-                addMarker(locations.get(i).get(j),i);
+        for(int i = 1; i <= 5; i++){
+            if(locations.get(i) != null){
+                for(int j = 0; j < locations.get(i).size(); j++){
+                    addMarker(locations.get(i).get(j),i);
+                }
             }
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-8.055368, -34.870393), 12));
@@ -151,8 +202,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void addCategoryTemp(int category){
-        List<LatLng> categoryDatas = new DataParser().parse(getApplication()).get(category);
-        locations.put(category, categoryDatas);
+        switch (category){
+            case 1:
+                locations.put(category, new LocationsDBController(getApplication()).getAllLocationsRestaurant(getApplication()));
+                break;
+            case 2:
+                locations.put(category, new LocationsDBController(getApplication()).getAllLocationsBank(getApplication()));
+                break;
+            case 3:
+                locations.put(category, new LocationsDBController(getApplication()).getAllLocationsGasStation(getApplication()));
+                break;
+            case 4:
+                locations.put(category, new LocationsDBController(getApplication()).getAllLocationsPublicZone(getApplication()));
+                break;
+            case 5:
+                locations.put(category, new LocationsDBController(getApplication()).getAllLocationsShop(getApplication()));
+                break;
+            default:
+                Log.i("Main", "Categoria não válida");
+        }
     }
 
     public void updateMap(){
@@ -178,31 +246,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         switch (mode){
             case "restaurant":
 
-                if(f1.getVisibility() == View.VISIBLE){
+                if(frameRestaurant.getVisibility() == View.VISIBLE){
 
                     if(locations.size()>1) {
-                        f1.setVisibility(View.INVISIBLE);
+                        editor.putBoolean(Constants.SELECTED_RESTAURANT, false);
+                        editor.apply();
+                        frameRestaurant.setVisibility(View.INVISIBLE);
                         deleteCategoryTemp(1);
                     } else{
                         Toast.makeText(getApplication(), "Ação não permitida", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    f1.setVisibility(View.VISIBLE);
+                    editor.putBoolean(Constants.SELECTED_RESTAURANT, true);
+                    editor.apply();
+                    frameRestaurant.setVisibility(View.VISIBLE);
                     addCategoryTemp(1);
 
                 }
                 updateMap();
                 break;
             case "bank":
-                if(f2.getVisibility() == View.VISIBLE){
+                if(frameBank.getVisibility() == View.VISIBLE){
                     if(locations.size()>1) {
-                        f2.setVisibility(View.INVISIBLE);
+                        editor.putBoolean(Constants.SELECTED_BANK, false);
+                        editor.apply();
+                        frameBank.setVisibility(View.INVISIBLE);
                         deleteCategoryTemp(2);
                     } else{
                         Toast.makeText(getApplication(), "Ação não permitida", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    f2.setVisibility(View.VISIBLE);
+                    editor.putBoolean(Constants.SELECTED_BANK, true);
+                    editor.apply();
+                    frameBank.setVisibility(View.VISIBLE);
                     addCategoryTemp(2);
 
                 }
@@ -210,16 +286,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case "gas_stations":
 
-                if(f3.getVisibility() == View.VISIBLE){
+                if(frameGasStation.getVisibility() == View.VISIBLE){
                     if(locations.size()>1) {
-                        f3.setVisibility(View.INVISIBLE);
+                        editor.putBoolean(Constants.SELECTED_GAS_STATION, false);
+                        editor.apply();
+                        frameGasStation.setVisibility(View.INVISIBLE);
                         deleteCategoryTemp(3);
                     } else{
                         Toast.makeText(getApplication(), "Ação não permitida", Toast.LENGTH_SHORT).show();
                     }
 
                 } else {
-                    f3.setVisibility(View.VISIBLE);
+                    editor.putBoolean(Constants.SELECTED_GAS_STATION, true);
+                    editor.apply();
+                    frameGasStation.setVisibility(View.VISIBLE);
                     addCategoryTemp(3);
 
                 }
@@ -227,16 +307,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case "public_zone":
 
-                if(f4.getVisibility() == View.VISIBLE){
+                if(framePublicZone.getVisibility() == View.VISIBLE){
                     if(locations.size()>1) {
-                        f4.setVisibility(View.INVISIBLE);
+                        editor.putBoolean(Constants.SELECTED_PUBLIC_ZONE, false);
+                        editor.apply();
+                        framePublicZone.setVisibility(View.INVISIBLE);
                         deleteCategoryTemp(4);
                     } else{
                         Toast.makeText(getApplication(), "Ação não permitida", Toast.LENGTH_SHORT).show();
                     }
 
                 } else {
-                    f4.setVisibility(View.VISIBLE);
+                    editor.putBoolean(Constants.SELECTED_PUBLIC_ZONE, true);
+                    editor.apply();
+                    framePublicZone.setVisibility(View.VISIBLE);
                     addCategoryTemp(4);
 
 
@@ -245,9 +329,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case "shop":
 
-                if(f5.getVisibility() == View.VISIBLE){
+                if(frameShop.getVisibility() == View.VISIBLE){
                     if(locations.size()>1) {
-                        f5.setVisibility(View.INVISIBLE);
+                        editor.putBoolean(Constants.SELECTED_SHOP, false);
+                        editor.apply();
+                        frameShop.setVisibility(View.INVISIBLE);
                         deleteCategoryTemp(5);
                     } else{
                         Toast.makeText(getApplication(), "Ação não permitida", Toast.LENGTH_SHORT).show();
@@ -255,7 +341,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
                 } else {
-                    f5.setVisibility(View.VISIBLE);
+                    editor.putBoolean(Constants.SELECTED_SHOP, true);
+                    editor.apply();
+                    frameShop.setVisibility(View.VISIBLE);
                     addCategoryTemp(5);
 
                 }
